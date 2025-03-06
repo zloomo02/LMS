@@ -1,6 +1,4 @@
-import Stripe from "stripe";
 import Course from "../models/Course.js";
-import Purchase from "../models/Purchase.js";
 
 //Get All Courses
 export const getAllCourses = async (req, res) => {
