@@ -8,6 +8,7 @@ import Footer from "../../components/student/Footer";
 import YouTube from "react-youtube";
 import axios from "axios";
 import { toast } from "react-toastify";
+import getYoutubeId from "get-youtube-id"
 
 const CourseDetails = () => {
   const { id } = useParams();
@@ -37,7 +38,7 @@ const CourseDetails = () => {
     const { data } = await axios.get(backendUrl + '/api/course/' + id);
 
     if(data.success){
-      setCourseData(data.courseData);
+      setCourseData(data.courseData);  
     }else{
       toast.error(data.message);
     }
@@ -176,11 +177,7 @@ const CourseDetails = () => {
                               {lecture.isPreviewFree && (
                                 <p
                                   onClick={() =>
-                                    setPlayerData({
-                                      videoId: lecture.lectureUrl
-                                        .split("/")
-                                        .pop(),
-                                    })
+                                    setPlayerData(lecture.lectureUrl)
                                   }
                                   className="text-blue-500 cursor-pointer"
                                 >
@@ -220,7 +217,7 @@ const CourseDetails = () => {
         <div className="max-w-course-card z-10 shadow-custom-card rounded-t md:rounded-none overflow-hidden bg-white min-w-[300px] sm:min-w-[420px]">
           {playerData ? (
             <YouTube
-              videoId={playerData.videoId}
+              videoId={getYoutubeId(playerData)}
               opts={{ playerVars: { autoplay: 1 } }}
               iframeClassName="w-full aspect-video"
             />

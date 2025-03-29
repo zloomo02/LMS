@@ -9,6 +9,7 @@ import Rating from "../../components/student/Rating";
 import axios from "axios";
 import { toast } from "react-toastify";
 import Loading from "../../components/student/Loading";
+import getYouTubeID from "get-youtube-id";
 
 const Player = () => {
   const {
@@ -171,11 +172,7 @@ const Player = () => {
                               {lecture.lectureUrl && (
                                 <p
                                   onClick={() =>
-                                    setPlayerData({
-                                      ...lecture,
-                                      chapter: index + 1,
-                                      lecture: i + 1,
-                                    })
+                                    setPlayerData(lecture.lectureUrl)
                                   }
                                   className="text-blue-500 cursor-pointer"
                                 >
@@ -207,7 +204,7 @@ const Player = () => {
           {playerData ? (
             <div>
               <YouTube
-                videoId={playerData.lectureUrl.split("/").pop()}
+                videoId={getYouTubeID(playerData)}
                 iframeClassName="w-full aspect-video"
               />
               <div className="flex justify-between items-center mt-1">
