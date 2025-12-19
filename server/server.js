@@ -12,6 +12,7 @@ import userRouter from "./routes/userRoutes.js";
 const app = express();
 
 await connectDB() 
+await connectCloudinary()
 
 
 app.use(cors())
