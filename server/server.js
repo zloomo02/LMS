@@ -12,26 +12,9 @@ import userRouter from "./routes/userRoutes.js";
 const app = express();
 let isInitialized = false;
 
-const allowedOrigin = "https://lms-fawn-pi.vercel.app";
 
-// ✅ CORS FIRST
-app.use((req, res, next) => {
-  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
-  res.setHeader(
-    "Access-Control-Allow-Methods",
-    "GET,POST,PUT,DELETE,OPTIONS"
-  );
-  res.setHeader(
-    "Access-Control-Allow-Headers",
-    "Content-Type, Authorization"
-  );
-  res.setHeader("Access-Control-Allow-Credentials", "true");
 
-  if (req.method === "OPTIONS") {
-    return res.sendStatus(200);
-  }
-  next();
-});
+app.use(cors())
 
 // JSON
 app.use(express.json());
@@ -73,5 +56,12 @@ app.post(
   stripeWebhooks
 );
 
-// ✅ NO app.listen()
-export default app;
+
+const PORT = process.env.PORT || 5000
+
+app.listen(PORT,()=>{
+  console.log(`Server is running on port ${PORT}`)
+})
+
+
+ 
