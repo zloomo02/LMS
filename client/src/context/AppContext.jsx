@@ -1,5 +1,5 @@
 import { createContext, useEffect, useState } from "react";
-import { dummyCourses } from "../assets/assets";
+
 import { useNavigate } from "react-router-dom";
 import humanizeDuration from "humanize-duration";
 import { useAuth, useUser } from "@clerk/clerk-react";
@@ -130,6 +130,7 @@ export const AppContextProvider = (props) => {
 
   useEffect(() => {
     if (user) {
+      fetchUserData()
       logToken()
       
     }
