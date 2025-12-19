@@ -16,29 +16,11 @@ await connectDB()
 
 app.use(cors())
 
-// JSON
-app.use(express.json());
-
-// Clerk
-app.use(clerkMiddleware());
-
-
-
-// ✅ Middleware to ensure init runs once per cold start
-app.use(async (req, res, next) => {
-  try {
-    await init();
-    next();
-  } catch (err) {
-    console.error("Init failed:", err);
-    res.status(500).json({ error: "Initialization failed" });
-  }
-});
 
 // Routes
 app.get("/", (req, res) => res.send("API Working"));
 
-app.post("/clerk", clerkWebhooks);
+app.post("/clerk",express.json() ,clerkWebhooks);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
