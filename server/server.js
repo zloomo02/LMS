@@ -9,33 +9,54 @@ import connectCloudinary from "./configs/cloudinary.js";
 import courseRouter from "./routes/courseRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 
-//Initialize express
 const app = express();
 
-//Connect to Database
+// ✅ Allowed frontend
+const allowedOrigin = "https://lms-fawn-pi.vercel.app";
+
+// ✅ CORS FIRST
+app.use(
+  cors({
+    origin: allowedOrigin,
+    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+    allowedHeaders: ["Content-Type", "Authorization"],
+    credentials: true,
+  })
+);
+
+// ✅ Handle preflight explicitly
+app.options("*", cors());
+
+// ✅ JSON middleware (except Stripe)
+app.use(express.json());
+
+// ✅ Clerk after CORS
+app.use(clerkMiddleware());
+
+// Connect DBs
 await connectDB();
 await connectCloudinary();
 
-//Middlewares
-app.use(cors());
-app.use(clerkMiddleware());
+// Routes
+app.get("/", (req, res) => {
+  res.send("API Working");
+});
 
-//Routes
-app.get("/", (req, res) => { res.send("API Working"); });
+app.post("/clerk", clerkWebhooks);
 
-app.post("/clerk", express.json(), clerkWebhooks);
+app.use("/api/educator", educatorRouter);
+app.use("/api/course", courseRouter);
+app.use("/api/user", userRouter);
 
-app.use("/api/educator", express.json(), educatorRouter);
+// ⚠️ Stripe MUST use raw body
+app.post(
+  "/stripe",
+  express.raw({ type: "application/json" }),
+  stripeWebhooks
+);
 
-app.use("/api/course", express.json(), courseRouter)
-
-app.use("/api/user", express.json(), userRouter);
-
-app.post("/stripe", express.raw({type: 'application/json'}), stripeWebhooks);
-
-//Port
+// Port
 const PORT = process.env.PORT || 5000;
-
 app.listen(PORT, () => {
-  console.log(`Server is running on port ${PORT}`);
+  console.log(`Server running on port ${PORT}`);
 });
