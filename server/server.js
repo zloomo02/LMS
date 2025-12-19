@@ -10,8 +10,8 @@ import courseRouter from "./routes/courseRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 
 const app = express();
-let isInitialized = false;
 
+await connectDB() 
 
 
 app.use(cors())
@@ -22,13 +22,7 @@ app.use(express.json());
 // Clerk
 app.use(clerkMiddleware());
 
-// ✅ Initialize DBs SAFELY
-async function init() {
-  if (isInitialized) return;
-  await connectDB();
-  await connectCloudinary();
-  isInitialized = true;
-}
+
 
 // ✅ Middleware to ensure init runs once per cold start
 app.use(async (req, res, next) => {
