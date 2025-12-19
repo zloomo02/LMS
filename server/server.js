@@ -15,17 +15,29 @@ const app = express();
 const allowedOrigin = "https://lms-fawn-pi.vercel.app";
 
 // ✅ CORS FIRST
-app.use(
-  cors({
-    origin: allowedOrigin,
-    methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
-    allowedHeaders: ["Content-Type", "Authorization"],
-    credentials: true,
-  })
-);
+app.use((req, res, next) => {
+  res.setHeader("Access-Control-Allow-Origin", allowedOrigin);
+  res.setHeader(
+    "Access-Control-Allow-Methods",
+    "GET,POST,PUT,DELETE,OPTIONS"
+  );
+  res.setHeader(
+    "Access-Control-Allow-Headers",
+    "Content-Type, Authorization"
+  );
+  res.setHeader("Access-Control-Allow-Credentials", "true");
+
+  if (req.method === "OPTIONS") {
+    return res.sendStatus(200);
+  }
+  next();
+});
 
 // ✅ Handle preflight explicitly
-app.options("*", cors());
+app.options("*", (req, res) => {
+  res.sendStatus(200);
+});
+
 
 // ✅ JSON middleware (except Stripe)
 app.use(express.json());
@@ -55,6 +67,6 @@ app.post(
   stripeWebhooks
 );
 
-
+  
 export default app;
 
