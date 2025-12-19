@@ -28,7 +28,7 @@ app.use("/api/user",express.json() ,userRouter);
 // Stripe (raw body only)
 app.post(
   "/stripe",
-  express.raw({ type: "application/json" }),
+  express.json(),
   stripeWebhooks
 );
 
