@@ -15,7 +15,7 @@ await connectDB()
 
 
 app.use(cors())
-
+app.use(clerkMiddleware())
 
 // Routes
 app.get("/", (req, res) => res.send("API Working"));
