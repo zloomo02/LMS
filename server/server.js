@@ -10,8 +10,8 @@ import courseRouter from "./routes/courseRoutes.js";
 import userRouter from "./routes/userRoutes.js";
 
 const app = express();
+let isInitialized = false;
 
-// ✅ Allowed frontend
 const allowedOrigin = "https://lms-fawn-pi.vercel.app";
 
 // ✅ CORS FIRST
@@ -33,40 +33,45 @@ app.use((req, res, next) => {
   next();
 });
 
-// ✅ Handle preflight explicitly
-app.options("*", (req, res) => {
-  res.sendStatus(200);
-});
-
-
-// ✅ JSON middleware (except Stripe)
+// JSON
 app.use(express.json());
 
-// ✅ Clerk after CORS
+// Clerk
 app.use(clerkMiddleware());
 
-// Connect DBs
-await connectDB();
-await connectCloudinary();
+// ✅ Initialize DBs SAFELY
+async function init() {
+  if (isInitialized) return;
+  await connectDB();
+  await connectCloudinary();
+  isInitialized = true;
+}
 
-// Routes
-app.get("/", (req, res) => {
-  res.send("API Working");
+// ✅ Middleware to ensure init runs once per cold start
+app.use(async (req, res, next) => {
+  try {
+    await init();
+    next();
+  } catch (err) {
+    console.error("Init failed:", err);
+    res.status(500).json({ error: "Initialization failed" });
+  }
 });
 
-app.post("/clerk", clerkWebhooks);
+// Routes
+app.get("/", (req, res) => res.send("API Working"));
 
+app.post("/clerk", clerkWebhooks);
 app.use("/api/educator", educatorRouter);
 app.use("/api/course", courseRouter);
 app.use("/api/user", userRouter);
 
-// ⚠️ Stripe MUST use raw body
+// Stripe (raw body only)
 app.post(
   "/stripe",
   express.raw({ type: "application/json" }),
   stripeWebhooks
 );
 
-  
+// ✅ NO app.listen()
 export default app;
-
