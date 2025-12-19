@@ -25,7 +25,7 @@ app.use("/api/educator",express.json() ,educatorRouter);
 app.use("/api/course",express.json() ,courseRouter);
 app.use("/api/user",express.json() ,userRouter);
 
-// Stripe (raw body only)
+
 app.post(
   "/stripe",
   express.json(),
